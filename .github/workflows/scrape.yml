@@ -30,7 +30,7 @@ jobs:
       run: python scraper.py --keywords "success,ai,passive income" --hours 6 --output results/viral_tweets_$(date +%Y%m%d_%H%M%S).json
     
     - name: Upload results as artifact
-      uses: actions/upload-artifact@v3
+     - me create a corrected version:** uses: actions/upload-artifact@v4
       with:
         name: scraped-tweets
         path: results/
