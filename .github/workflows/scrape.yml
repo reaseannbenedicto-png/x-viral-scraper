@@ -25,7 +25,17 @@ jobs:
         run: mkdir -p results
 
       - name: Run scraper
-        run: python scraper.py --keywords "success,ai,passive income" --hours 6 --output results/viral_tweets_$(date +%Y%m%d_%H%M%S).json
+        run: |
+          python -c "
+          import requests, json, os
+          headers = {
+            'x-rapidapi-host': 'twitter-v24.p.rapidapi.com',
+            'x-rapidapi-key': os.environ.get('RAPIDAPI_KEY')
+          }
+          r = requests.get('https://twitter-v24.p.rapidapi.com/search/', headers=headers, params={'query': 'ai', 'section': 'top', 'limit': 5})
+          print(r.status_code)
+          print(json.dumps(r.json(), indent=2)[:2000])
+          "
         env:
           RAPIDAPI_KEY: ${{ secrets.RAPIDAPI_KEY }}
 
