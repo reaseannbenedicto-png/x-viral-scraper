@@ -15,34 +15,34 @@ jobs:
         uses: actions/setup-python@v4
         with:
           python-version: '3.11'
-    
-    - name: Install dependencies
-      run: |
-        python -m pip install --upgrade pip
-        pip install -r requirements.txt
-    
-    - name: Create results directory
-      run: mkdir -p results
-    
-    - name: Run scraper
-      run: python scraper.py --keywords "success,ai,passive income" --hours 6 --output results/viral_tweets_$(date +%Y%m%d_%H%M%S).json
-    
-    - name: Upload results as artifact
-      uses: actions/upload-artifact@v4
-      with:
-        name: scraped-tweets
-        path: results/
-        retention-days: 30
 
-  - name: Extract top 3 trends
-      run: python extract_trends.py
-    
-    - name: Commit trends summary
-      run: |
-        git config --local user.email "action@github.com"
-        git config --local user.name "GitHub Action"
-        git add trends.json
-        git commit -m "Update viral trends: $(date)" || echo "No changes to commit"
-        git push
-      env:
-        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      - name: Install dependencies
+        run: |
+          python -m pip install --upgrade pip
+          pip install -r requirements.txt
+
+      - name: Create results directory
+        run: mkdir -p results
+
+      - name: Run scraper
+        run: python scraper.py --keywords "success,ai,passive income" --hours 6 --output results/viral_tweets_$(date +%Y%m%d_%H%M%S).json
+
+      - name: Upload results as artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: scraped-tweets
+          path: results/
+          retention-days: 30
+
+      - name: Extract top 3 trends
+        run: python extract_trends.py
+
+      - name: Commit trends summary
+        run: |
+          git config --local user.email "action@github.com"
+          git config --local user.name "GitHub Action"
+          git add trends.json
+          git commit -m "Update viral trends: $(date)" || echo "No changes to commit"
+          git push
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
