@@ -25,26 +25,18 @@ jobs:
         run: mkdir -p results
 
       - name: Run scraper
-        run: python scraper.py --keywords "success,ai,passive income" --hours 6 --output results/viral_tweets_$(date +%Y%m%d_%H%M%S).json
+        run: |
+          python -c "
+import requests, json, os
+headers = {
+  'x-rapidapi-host': 'twitter-v24.p.rapidapi.com',
+  'x-rapidapi-key': os.environ.get('RAPIDAPI_KEY')
+}
+r = requests.get('https://twitter-v24.p.rapidapi.com/search/', headers=headers, params={'query': 'ai', 'section': 'top', 'limit': 5})
+print('STATUS:', r.status_code)
+d = r.json()
+print('TOP KEYS:', list(d.keys()))
+print(json.dumps(d, indent=2)[:3000])
+"
         env:
           RAPIDAPI_KEY: ${{ secrets.RAPIDAPI_KEY }}
-
-      - name: Upload results as artifact
-        uses: actions/upload-artifact@v4
-        with:
-          name: scraped-tweets
-          path: results/
-          retention-days: 30
-
-      - name: Extract top 3 trends
-        run: python extract_trends.py
-
-      - name: Commit trends summary
-        run: |
-          git config --local user.email "action@github.com"
-          git config --local user.name "GitHub Action"
-          git add trends.json || echo "No trends.json to add"
-          git diff --staged --quiet || git commit -m "Update viral trends: $(date)"
-          git push || echo "Nothing to push"
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
