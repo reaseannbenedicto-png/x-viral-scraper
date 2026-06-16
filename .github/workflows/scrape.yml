@@ -26,6 +26,8 @@ jobs:
 
       - name: Run scraper
         run: python scraper.py --keywords "success,ai,passive income" --hours 6 --output results/viral_tweets_$(date +%Y%m%d_%H%M%S).json
+        env:
+          RAPIDAPI_KEY: ${{ secrets.RAPIDAPI_KEY }}
 
       - name: Upload results as artifact
         uses: actions/upload-artifact@v4
@@ -41,8 +43,8 @@ jobs:
         run: |
           git config --local user.email "action@github.com"
           git config --local user.name "GitHub Action"
-          git add trends.json
-          git commit -m "Update viral trends: $(date)" || echo "No changes to commit"
-          git push
+          git add trends.json || echo "No trends.json to add"
+          git diff --staged --quiet || git commit -m "Update viral trends: $(date)"
+          git push || echo "Nothing to push"
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
